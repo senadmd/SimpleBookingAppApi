@@ -1,0 +1,1 @@
+public record struct RoomDTO(int Id,  List<RoomEquipmentDTO> Equipment, string Name);

@@ -1,6 +1,5 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookingAppApi.Controllers;
 
@@ -10,44 +9,34 @@ public class BookingController : ControllerBase
 {
     private readonly ILogger<BookingController> _logger;
 
-    public BookingController(ILogger<BookingController> logger)
+    private readonly BookingBLL _bookingBLL;
+    public BookingController(ILogger<BookingController> logger, BookingBLL bookingBLL)
     {
         _logger = logger;
+        _bookingBLL = bookingBLL;
     }
 
     [HttpGet()]
     [Route("room/{roomId}/user/{username}")]
-    public async Task<List<Booking>> GetBookingsForRoomAndUser(int roomId, string username)
+    public async Task<List<BookingDTO>> GetBookingsForRoomAndUser(int roomId, string username)
     {
-        using var db = new BookingDbContext();
-        var usernameLowercase = username.ToLower().Trim();
-        return await db.Bookings.Where(x => x.Room.Id == roomId && x.Username == usernameLowercase)
-               .Include(x => x.Room).ThenInclude(x => x.Equipment).ToListAsync();
+       return await _bookingBLL.GetBookingsAsync(roomId,username);
     }
 
     [HttpPost()]
-    public async Task<ActionResult> CreateBooking([FromBody] BookingRequest bookingRequest)
+    public async Task<ActionResult> CreateBooking([FromBody] BookingRequestDTO bookingRequest)
     {
-        using var db = new BookingDbContext();
         if (bookingRequest.DateFrom >= bookingRequest.DateTo)
         {
             _logger.LogError($"Booking request with invalid time interval, DateFrom: {bookingRequest.DateFrom}, DateTo: {bookingRequest.DateTo}");
             return StatusCode((int)HttpStatusCode.BadRequest);
         }
-        var roomToBook = await db.Rooms.FirstOrDefaultAsync(x => x.Id == bookingRequest.RoomId);
-        if (roomToBook == null)
-        {
-            _logger.LogError($"Booking request contains non-existent roomId, RoomId: {bookingRequest.RoomId}");
-            return StatusCode((int)HttpStatusCode.BadRequest);
-        }
-        if (await db.Bookings.AnyAsync(x =>x.Room.Id == bookingRequest.RoomId && x.DateFrom <= bookingRequest.DateTo && bookingRequest.DateFrom <= x.DateTo)) 
+        if (await _bookingBLL.RequestOverlapsExistingBookingAsync(bookingRequest)) 
         {
             _logger.LogError($"Booking request overlaps with exising booking, RoomId: {bookingRequest.RoomId}  DateFrom: {bookingRequest.DateFrom}, DateTo: {bookingRequest.DateTo}");
             return StatusCode((int)HttpStatusCode.Conflict);
         }
-        var bookingToCreate = new Booking(bookingRequest, roomToBook);
-        db.Bookings.Add(bookingToCreate);
-        await db.SaveChangesAsync();
+        await _bookingBLL.CreateBookingAsync(bookingRequest);
         return StatusCode((int)HttpStatusCode.Created);
     }
 }

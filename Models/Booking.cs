@@ -5,16 +5,6 @@ using Microsoft.EntityFrameworkCore;
 [Index(nameof(DateFrom), nameof(DateTo))]
 public class Booking
 {
-    public Booking()
-    {
-    }
-    public Booking(BookingRequest bookingRequest, Room room)
-    {
-        this.Username = bookingRequest.Username;
-        this.Room = room;
-        this.DateFrom = bookingRequest.DateFrom;
-        this.DateTo = bookingRequest.DateTo;
-    }
     public int Id { get; set; } = 0;
 
     public Room Room { get; set; } = new();

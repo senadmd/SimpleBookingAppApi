@@ -1,0 +1,1 @@
+public record class BookingRequestDTO(int RoomId, string Username, DateTime DateFrom, DateTime DateTo);

@@ -1,0 +1,1 @@
+public record struct RoomEquipmentDTO ( int Id, string Type);
