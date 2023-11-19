@@ -1,0 +1,6 @@
+@BookingAppApi_HostAddress = http://localhost:5276
+
+GET {{BookingAppApi_HostAddress}}/booking/
+Accept: application/json
+
+###
