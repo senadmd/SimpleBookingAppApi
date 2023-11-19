@@ -1,5 +1,5 @@
 # SimpleBookingAppApi
-### A Simple API for handling room booking requests using .NET 8. Implemented with help of SQLite + AutoMapper.
+A Simple API for handling room booking requests using .NET 8. Implemented with help of SQLite + AutoMapper.
 ## Prerequisites
 ### Requires .NET 8 SDK
 ## Getting Started
