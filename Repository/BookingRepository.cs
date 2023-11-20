@@ -11,8 +11,7 @@ public class BookingRepository : IDisposable{
 
     public async Task<List<Booking>> GetBookingsAsync(int roomId, string username){
         using var db = new BookingDbContext();
-        return await db.Bookings.Where(x => x.Room.Id == roomId && x.Username == username)
-               .Include(x => x.Room).ThenInclude(x => x.Equipment).ToListAsync();
+        return await db.Bookings.Where(x => x.Room.Id == roomId && x.Username == username).ToListAsync();
     }
 
     
@@ -26,6 +25,10 @@ public class BookingRepository : IDisposable{
         using var _context = new BookingDbContext();
         return await _context.Bookings.AnyAsync(x => x.Room.Id == roomId &&
                x.DateFrom <= toDate && fromDate <= x.DateTo);
+    }
+
+    public async Task<List<Room>> GetRoomsAsync(){
+        return await _context.Rooms.Include(x=> x.Equipment).ToListAsync();
     }
 
     public async Task<Room?> GetRoomAsync(int roomId){

@@ -1,1 +1,1 @@
-public record struct BookingDTO ( int Id, RoomDTO Room,  string Username,  DateTime DateFrom, DateTime DateTo);
+public record struct BookingDTO ( int Id, int RoomId,  string Username,  DateTime DateFrom, DateTime DateTo);
