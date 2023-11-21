@@ -22,9 +22,8 @@ public class BookingBLL
 
     public async Task<List<BookingDTO>> GetBookingsAsync(int roomId, string username)
     {
-        var usernameLowercase = username.ToLower().Trim(); //sql-lite is case sensitive by default
+        var usernameLowercase = username.ToLower().Trim(); //SQLite is case sensitive by default
         var bookings = await _repository.GetBookingsAsync(roomId, usernameLowercase);
-        bookings.ForEach(x=> x.Room = new Room{ Id = roomId}); //for mapping roomId to result
         return _mapper.Map<List<BookingDTO>>(bookings);
     }
 
