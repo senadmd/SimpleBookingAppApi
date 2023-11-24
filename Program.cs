@@ -19,6 +19,16 @@ builder.Services.AddAutoMapper(provider => new MapperConfiguration(cfg =>
      }), typeof(Program));
 builder.Services.AddTransient(typeof(BookingBLL));
 builder.Services.AddTransient(typeof(BookingRepository));
+var corsPolicyName = "AllowCORS";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: corsPolicyName,
+                      policy =>
+                      {
+                          policy.AllowAnyOrigin().AllowAnyHeader()
+                                                  .AllowAnyMethod();
+                      });
+});
 
 var app = builder.Build();
 
@@ -43,7 +53,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseCors(corsPolicyName);
 
 app.UseAuthorization();
 
